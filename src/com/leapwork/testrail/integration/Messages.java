@@ -18,6 +18,7 @@ public final class Messages {
 	public static final String CASE_FLOW_MISMATCH = "Values of cases and Flows doesn't match";
 	public static final String CASE_INFORMATION = "Case: %1$s | Status: %2$s | Elapsed: %3$s";
 	public static final String CASE_KEYFRAME_FORMAT = "%1$s - %2$s";
+	public static final String CASE_KEYFRAME_FORMAT_WITHBLOCKTITLE = "%1$s - %2$s - %3$s";
 
 	public static final String GET_SPECIFIC_SCHEDULE_URI = "%1$s/api/v4/schedules/%2$s";
 	public static final String GET_RUN_ITEMS_URI = "%1$s/api/v4/run/%2$s/runItemIds";

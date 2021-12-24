@@ -348,8 +348,8 @@ public final class PluginHandler {
 
 	}
 
-	public boolean getScheduleState(String leapworkHost, Schedule schedule, Integer doneStatusValue,
-			String accesskey) throws Exception {
+	public boolean getScheduleState(String leapworkHost, Schedule schedule, Integer doneStatusValue, String accesskey)
+			throws Exception {
 		boolean isScheduleStillRunning = true;
 
 		String uri = String.format(Messages.GET_SCHEDULE_STATE_URI, leapworkHost, schedule.getLeapRunId());
@@ -365,12 +365,12 @@ public final class PluginHandler {
 				case 200:
 
 					JsonObject jsonState = parser.parse(response.getResponseBody()).getAsJsonObject();
-			
+
 					if (isScheduleStillRunning(jsonState))
 						isScheduleStillRunning = true;
 					else {
 						isScheduleStillRunning = false;
-						
+
 						String runItemsUri = String.format(Messages.GET_RUN_ITEMS_URI, leapworkHost,
 								schedule.getLeapRunId());
 						Response runItemIdsJson = client.prepareGet(runItemsUri).setHeader("AccessKey", accesskey)
@@ -384,7 +384,6 @@ public final class PluginHandler {
 
 							String strRunItemId = runItemId.getAsString();
 
-							logger.info("Tobe Delete " + strRunItemId + " -- " + runItemIdsJsonArray.size());
 							String caseTitle = "";
 							String caseId = "";
 							String statusStr = "";
@@ -425,12 +424,21 @@ public final class PluginHandler {
 										.getAsJsonArray();
 								for (JsonElement keyFrame : keyFrameJsonArr) {
 									String level = keyFrame.getAsJsonObject().get("Level").getAsString();
-									if (!level.contentEquals("") && !level.contentEquals("Trace")) {
-										String stacktrace = String.format(Messages.CASE_KEYFRAME_FORMAT,
-												keyFrame.getAsJsonObject().get("Timestamp").getAsJsonObject()
-														.get("Value").getAsString(),
-												keyFrame.getAsJsonObject().get("LogMessage"));
+									String timeStamp = keyFrame.getAsJsonObject().get("Timestamp").getAsJsonObject()
+											.get("Value").getAsString();
+									String logMessage = keyFrame.getAsJsonObject().get("LogMessage").getAsString();
+									JsonElement keyframeBlockTitle = keyFrame.getAsJsonObject().get("BlockTitle");
+									String stacktrace = "";
+									if (!level.contentEquals("") && !level.contentEquals("Trace"))
+									{
+										if (keyframeBlockTitle != null) {
 
+											stacktrace = String.format(Messages.CASE_KEYFRAME_FORMAT_WITHBLOCKTITLE,
+													timeStamp, keyframeBlockTitle.getAsString(), logMessage);
+										} else {
+											stacktrace = String.format(Messages.CASE_KEYFRAME_FORMAT,
+													timeStamp, logMessage);
+										}
 										keyFrames += stacktrace;
 										keyFrames += Messages.NEW_LINE;
 									}
@@ -570,7 +578,8 @@ public final class PluginHandler {
 					test.setElapsed(convertSecondsToTime(totalSeconds)); // set test total time
 					test.setStatusId(resultStatus); /// set test results
 					test.setComment(resultStatus);
-					test.addComment(String.format(Messages.ADD_CASE_ID_INFORMATION_TO_COMMENT, test.getTestRailCaseId()));
+					test.addComment(
+							String.format(Messages.ADD_CASE_ID_INFORMATION_TO_COMMENT, test.getTestRailCaseId()));
 
 				}
 			}
@@ -588,17 +597,18 @@ public final class PluginHandler {
 	}
 
 	private boolean isScheduleStillRunning(JsonObject jsonState) {
-		
+
 		JsonElement statusOfRunId = jsonState.get("Status");
-		if(statusOfRunId != null ) {
+		if (statusOfRunId != null) {
 			String status = statusOfRunId.getAsString();
 			if (status.contentEquals("Executing") || status.contentEquals("Queued"))
 				return true;
-			else return false;
+			else
+				return false;
 		}
-		
-	
-		else return true;
+
+		else
+			return true;
 
 	}
 
