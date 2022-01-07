@@ -71,16 +71,9 @@ public final class PluginHandler {
 
 	public void checkEnvironmentsAndStepsQuantity(Schedule schedule, ArrayList<Test> tests) throws Exception {
 		int totalSteps = 0;
-		for (Test test : tests) {
-			if (test.isStepCase()) {
 
-				totalSteps++;
-			}
-
-		}
-
-		int envs = schedule.getEnvironmentsQuantity();
-
+		totalSteps = tests.size();
+		int envs = schedule.getCountRunItems();
 		if (totalSteps != envs) {
 			for (Test test : tests) {
 				test.addComment(
@@ -106,41 +99,10 @@ public final class PluginHandler {
 				tests.add(new Test(jsonTest.get("id").getAsInt(), jsonTest.get("case_id").getAsInt(),
 						jsonTest.get("title").getAsString(), testRailAPIClient.getTestRailAddress(),
 						Utils.defaultIntegerIfNull(jsonTest.get("assignedto_id"), null)));
-
-				JsonElement jsonSteps = jsonTest.get("custom_steps_separated");
-
-				if (jsonSteps == null || jsonSteps == JsonNull.INSTANCE) {
-					tests.get(currentTest).setStepCase(false); // This case does not support steps
-					logger.warning(
-							String.format(Messages.UNSUPPORTED_CASE_TYPE, tests.get(currentTest).getTestTitle()));
-					tests.get(currentTest).setStatusId(Test.Status.RETEST);
-					tests.get(currentTest).setComment(Test.Status.RETEST);
-					tests.get(currentTest).addComment(
-							String.format(Messages.UNSUPPORTED_CASE_TYPE, tests.get(currentTest).getTestTitle()));
-					tests.get(currentTest).setElapsed("1s");
-
-				} else {
-					tests.get(currentTest).setStepCase(true);
-					JsonArray jsonTestSteps = jsonSteps.getAsJsonArray();
-
-					int currentStep = 1;
-
-					for (JsonElement jsonElementStep : jsonTestSteps) {
-						JsonObject jsonStep = jsonElementStep.getAsJsonObject();
-
-						tests.get(currentTest).getSteps()
-								.add(new Step(Utils.defaultStringIfNull(jsonStep.get("expected"), ""),
-										Utils.defaultStringIfNull(jsonStep.get("content"),
-												String.format("Step %1$d", currentStep))));
-
-						currentStep++;
-					}
-				}
-
-				currentTest++;
 			}
+		}
 
-		} catch (UnknownHostException e) {
+		catch (UnknownHostException e) {
 			String connectionErrorMessage = String.format(Messages.COULD_NOT_CONNECT_TO, e.getMessage());
 			throw new Exception(connectionErrorMessage);
 		} catch (Exception e) {
@@ -378,7 +340,7 @@ public final class PluginHandler {
 
 						JsonObject runItemIdsJsonObj = parser.parse(runItemIdsJson.getResponseBody()).getAsJsonObject();
 						JsonArray runItemIdsJsonArray = runItemIdsJsonObj.get("RunItemIds").getAsJsonArray();
-
+						schedule.setCountRunItems(runItemIdsJsonArray.size());
 						// get data for each runItem
 						for (JsonElement runItemId : runItemIdsJsonArray) {
 
@@ -429,15 +391,14 @@ public final class PluginHandler {
 									String logMessage = keyFrame.getAsJsonObject().get("LogMessage").getAsString();
 									JsonElement keyframeBlockTitle = keyFrame.getAsJsonObject().get("BlockTitle");
 									String stacktrace = "";
-									if (!level.contentEquals("") && !level.contentEquals("Trace"))
-									{
+									if (!level.contentEquals("") && !level.contentEquals("Trace")) {
 										if (keyframeBlockTitle != null) {
 
 											stacktrace = String.format(Messages.CASE_KEYFRAME_FORMAT_WITHBLOCKTITLE,
 													timeStamp, keyframeBlockTitle.getAsString(), logMessage);
 										} else {
-											stacktrace = String.format(Messages.CASE_KEYFRAME_FORMAT,
-													timeStamp, logMessage);
+											stacktrace = String.format(Messages.CASE_KEYFRAME_FORMAT, timeStamp,
+													logMessage);
 										}
 										keyFrames += stacktrace;
 										keyFrames += Messages.NEW_LINE;
@@ -548,40 +509,25 @@ public final class PluginHandler {
 			//////// MAPPING SCHEDULE CASES AND TEST RESULTS
 
 			for (Test test : testRailTests) {
-				if (test.isStepCase()) {
-
-					for (Step step : test.getSteps()) {
-						for (Case aCase : schedule.getCases()) {
-							if (aCase.getCaseName().contentEquals(step.getContent()) && !aCase.isResultAlreadySet()) {
-
-								if (!step.isStepFilled()) {
-									step.setActual(aCase.getKeyFramesLogs());
-									step.addSeconds(aCase.getSeconds());
-									step.setStatusId(aCase.getCaseStatus());
-									step.setStepFilled(true);
-									break;
-								}
-								aCase.setResultAlreadySet(true);
-							}
+				boolean testfound = false;
+				for (Case aCase : schedule.getCases()) {
+					if (aCase.getCaseName().trim().equalsIgnoreCase(test.getTestTitle().trim()) && !aCase.isResultAlreadySet()) {
+						if (!test.isTestFilled()) {
+							test.addComment(aCase.getKeyFramesLogs());
+							test.setElapsed(convertSecondsToTime(aCase.getSeconds()));
+							test.setStatusId(aCase.getCaseStatus());
+							test.setTestFilled(true);
+							aCase.setResultAlreadySet(true);
+							testfound = true;
+							break;
 						}
+
 					}
-					Integer totalSeconds = 0;
-					Integer resultStatus = Test.Status.PASSED;
-
-					for (Step step : test.getSteps()) {
-						if (step.getStatusId() > resultStatus)
-							resultStatus = step.getStatusId();
-
-						totalSeconds += step.getSeconds();
-					}
-
-					test.setElapsed(convertSecondsToTime(totalSeconds)); // set test total time
-					test.setStatusId(resultStatus); /// set test results
-					test.setComment(resultStatus);
-					test.addComment(
-							String.format(Messages.ADD_CASE_ID_INFORMATION_TO_COMMENT, test.getTestRailCaseId()));
 
 				}
+				if (!testfound)
+					test.addComment(Messages.CASE_DIDNOT_MATCHED_WITH_FLOW);
+
 			}
 
 			testRailAPIClient.sendPost(String.format(Messages.SET_TESTRAIL_TESTS_RESULTS_POST, testRailRunId),

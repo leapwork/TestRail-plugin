@@ -1,7 +1,6 @@
 package com.leapwork.testrail.integration;
 
 import com.google.gson.annotations.SerializedName;
-
 import java.util.ArrayList;
 
 /**
@@ -23,9 +22,13 @@ public final class Test {
     @SerializedName("assignedto_id")
     private Integer assignedTo;
     private transient String testURL;
-    private transient boolean isStepCase;
-    @SerializedName("custom_step_results")
-    private ArrayList<Step> steps;
+    String actual;
+    private transient boolean isTestFilled;
+    
+    /*  private transient boolean isStepCase;
+	
+	 * @SerializedName("custom_step_results") private ArrayList<Step> steps;
+	 */
 
 
     public Test(Integer testId, Integer testRailCaseId, String testTitle, String testRailAddress, Integer assignedTo){
@@ -35,14 +38,13 @@ public final class Test {
         this.testRailCaseId = testRailCaseId;
         this.leapworkCaseId = null;
         this.statusId = Status.RETEST;  //default value
-        this.steps = new ArrayList<>();
         this.comment = null;
         this.version = null;
         this.elapsed = null;
         this.defects = null;
         this.assignedTo = assignedTo;
-        this.isStepCase = false;
         this.testURL = String.format(Messages.GET_TESTRAIL_TEST_GET,testRailAddress,testId);
+        this.isTestFilled = false;
     }
 
     public Integer getTestId() {
@@ -127,17 +129,15 @@ public final class Test {
         return testURL;
     }
 
-    public ArrayList<Step> getSteps() {
-        return steps;
-    }
-
-    public boolean isStepCase() {
-        return isStepCase;
-    }
+	/*
+	  public ArrayList<Step> getSteps() { return steps; }
+	 
+	  public boolean isStepCase() { return isStepCase; }
+	 
 
     public void setStepCase(boolean stepCase) {
         this.isStepCase = stepCase;
-    }
+    }*/
 
     public String getLeapworkCaseId() {
         return leapworkCaseId;
@@ -159,4 +159,20 @@ public final class Test {
         public static final int RETEST = 4;
         public static final int FAILED = 5;
     }
+    
+    public String getActual() {
+		return actual;
+	}
+    
+    public void setActual(String actual) {
+		this.actual = actual;
+	}
+    
+	public boolean isTestFilled() {
+		return isTestFilled;
+	}
+	
+	public void setTestFilled(boolean testFilled) {
+		isTestFilled = testFilled;
+	}
 }

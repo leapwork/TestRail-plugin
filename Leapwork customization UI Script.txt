@@ -80,7 +80,7 @@ function RunSchedule()
 {
     $.ajax(
         {
-            url: document.getElementById('testRailURL').value + '/' + "leapwork.php?",
+            url:  "http://104.215.91.155:8088/php_prog/leapwork.php?",
             data: {
                 runId: uiscripts.context.run.id,
                 testRailAddress: document.getElementById('testRailURL').value,

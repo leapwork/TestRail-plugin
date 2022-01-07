@@ -13,8 +13,9 @@ public final class Messages {
 	public static final String NO_SUCH_SCHEDULE = "No such schedule This may occur if try to run schedule that controller does not have. It can be deleted. Or you simply have forgotten to select schedules after changing controller address;";
 	public static final String NO_SUCH_SCHEDULE_WAS_FOUND = "Could not find %1$s[%2$s] schedule It was likely deleted";
 	public static final String SCHEDULE_HAS_NO_CASES = "Schedule %1$s[%2$s] has no cases Add them in your leapwork studio and try again";
+	
 	public static final String SCHEDULE_IS_RUNNING_NOW = "Schedule %1$s[%2$s] is already running or queued now Try to run it again when it's finished or you can try stop it, then run it";
-
+	public static final String CASE_DIDNOT_MATCHED_WITH_FLOW = "Your TestRail Test Case Title did not matched with any of the flow in the Leapwork";
 	public static final String CASE_FLOW_MISMATCH = "Values of cases and Flows doesn't match";
 	public static final String CASE_INFORMATION = "Case: %1$s | Status: %2$s | Elapsed: %3$s";
 	public static final String CASE_KEYFRAME_FORMAT = "%1$s - %2$s";
