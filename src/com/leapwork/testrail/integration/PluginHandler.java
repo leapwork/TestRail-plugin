@@ -85,21 +85,33 @@ public final class PluginHandler {
 	}
 
 	public ArrayList<Test> getTestRailTests(String testRailRunId, APIClient testRailAPIClient) throws Exception {
-		ArrayList<Test> tests = new ArrayList<>();
+
+		ArrayList<Test> test = new ArrayList<>();
 
 		try {
-			JsonArray jsonTests = testRailAPIClient
-					.sendGet(String.format(Messages.GET_TESTRAIL_TESTS_GET, testRailRunId)).getAsJsonArray();
+			JsonElement jsonElements = testRailAPIClient
+					.sendGet(String.format(Messages.GET_TESTRAIL_TESTS_GET, testRailRunId));
 
-			int currentTest = 0;
+			// for own prem testrail
+			if (jsonElements.isJsonArray()) {
 
-			for (JsonElement jsonElement : jsonTests) {
-				JsonObject jsonTest = jsonElement.getAsJsonObject();
+				JsonArray jsonTests = jsonElements.getAsJsonArray();
+				test = addTestForJsonElement(jsonTests, testRailAPIClient);
 
-				tests.add(new Test(jsonTest.get("id").getAsInt(), jsonTest.get("case_id").getAsInt(),
-						jsonTest.get("title").getAsString(), testRailAPIClient.getTestRailAddress(),
-						Utils.defaultIntegerIfNull(jsonTest.get("assignedto_id"), null)));
 			}
+
+			// for cloud testrail
+			else if (jsonElements.isJsonObject()) {
+				JsonArray jsonTests = jsonElements.getAsJsonObject().get("tests").getAsJsonArray();
+
+				test = addTestForJsonElement(jsonTests, testRailAPIClient);
+			}
+
+			else {
+				String errorMessage = String.format(Messages.ERROR_MESSAGE_TESTS);
+				throw new Exception(errorMessage);
+			}
+
 		}
 
 		catch (UnknownHostException e) {
@@ -109,7 +121,20 @@ public final class PluginHandler {
 			throw new Exception(e);
 		}
 
+		return test;
+	}
+
+	public ArrayList<Test> addTestForJsonElement(JsonArray jsonTests, APIClient testRailAPIClient) {
+		ArrayList<Test> tests = new ArrayList<>();
+
+		for (JsonElement jsonElement : jsonTests) {
+			JsonObject jsonTest = jsonElement.getAsJsonObject();
+			tests.add(new Test(jsonTest.get("id").getAsInt(), jsonTest.get("case_id").getAsInt(),
+					jsonTest.get("title").getAsString(), testRailAPIClient.getTestRailAddress(),
+					Utils.defaultIntegerIfNull(jsonTest.get("assignedto_id"), null)));
+		}
 		return tests;
+
 	}
 
 	public Schedule detectSchedule(String leapworkHost, String scheduleId, String accesskey) throws Exception {
@@ -511,7 +536,8 @@ public final class PluginHandler {
 			for (Test test : testRailTests) {
 				boolean testfound = false;
 				for (Case aCase : schedule.getCases()) {
-					if (aCase.getCaseName().trim().equalsIgnoreCase(test.getTestTitle().trim()) && !aCase.isResultAlreadySet()) {
+					if (aCase.getCaseName().trim().equalsIgnoreCase(test.getTestTitle().trim())
+							&& !aCase.isResultAlreadySet()) {
 						if (!test.isTestFilled()) {
 							test.addComment(aCase.getKeyFramesLogs());
 							test.setElapsed(convertSecondsToTime(aCase.getSeconds()));

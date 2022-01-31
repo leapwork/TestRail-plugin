@@ -66,7 +66,7 @@ if(jsonSchedules[i].IsEnabled == true)
                 "This may occur because of the next reasons:\n" +
                 "1.Wrong Controller URL\n" +
                 "2.Controller is not running or updating now, check it in services\n" +
-                "3.Your Leapwork Controller port is blocked.\nUse 'netstat -na | find \"9000\"' command, The result should be:\n 0.0.0.0:9000  0.0.0.0:0  LISTENING\n" +
+                "3.Your Leapwork Controller port is blocked.\nUse 'netstat -na | find \"9001\"' command, The result should be:\n 0.0.0.0:9001  0.0.0.0:0  LISTENING\n" +
                 "4.You are using https in controller URL, which is not supported. HTTP only!\n" +
                 "5.Your browser has such a setting enabled that blocks any http requests from https\n" +
                 "If nothing helps, please contact support https://leapwork.com/support"
@@ -80,7 +80,7 @@ function RunSchedule()
 {
     $.ajax(
         {
-            url:  "http://104.215.91.155:8088/php_prog/leapwork.php?",
+            url: document.getElementById('testRailURL').value + '/' + "leapwork.php?",
             data: {
                 runId: uiscripts.context.run.id,
                 testRailAddress: document.getElementById('testRailURL').value,

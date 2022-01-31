@@ -30,7 +30,7 @@ public final class Messages {
 
 	public static final String PLUGIN_SUCCESSFUL_FINISH = "leapwork for TestRail  plugin  successfully finished";
 	public static final String PLUGIN_ERROR_FINISH = "leapwork for TestRail plugin finished with errors";
-
+	public static final String ERROR_MESSAGE_TESTS = "Unable to convert reposnse from TestRail to create tests for plugin";
 	public static final String CONTROLLER_RESPONDED_WITH_ERRORS = "Controller responded with errors Please check controller logs and try again If does not help, try to restart controller.";
 	public static final String PLEASE_CONTACT_SUPPORT = "If nothing helps, please contact support https://leapwork.com/support and provide the next information:\n1.Plugin Logs\n2.leapwork and plugin version\n3.Controller logs from the moment you've run the plugin.\n4.Assets without videos if possible.\nYou can find them {Path to leapwork}/leapwork/Assets\nThank you"
 			.replace("\n", NEW_LINE);

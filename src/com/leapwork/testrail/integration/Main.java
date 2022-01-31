@@ -16,7 +16,7 @@ public class Main {
 
 	public static void main(String[] args) throws IOException, APIException {
 		
-		/*final String testRailRunId = args[0];
+		final String testRailRunId = args[0];
 		final String testRailAddress = args[1];
 		final String testRailLogin = args[2];
 		final String testRailPassword = args[3];
@@ -25,25 +25,14 @@ public class Main {
 		final String delay = args[6];
 		final String doneStatusAs = args[7];
 		final String apiAccesskey = args[8];
-*/
-	
-		final String testRailRunId = "18";
-		final String testRailAddress ="http://localhost:85";
-		final String testRailLogin = "admin@leapwork.com";
-		final String testRailPassword = "admin";
-		final String leapworkHostURL = "http://localhost:9001";
-		final String scheduleId = "a56307fe-f820-44e5-8257-2dd82169a4bb";
-		final String delay = "10";
-		final String doneStatusAs = "1";
-		final String apiAccesskey = "qwertyui";
 
-		//FileHandler logFileHandler = new FileHandler(String.format(Messages.LOG_FILE_NAME, testRailRunId));
-		FileHandler logFileHandler = new FileHandler(System.getProperty("user.dir") + testRailRunId);
+	
+		FileHandler logFileHandler = new FileHandler(String.format(Messages.LOG_FILE_NAME, testRailRunId));
 		logger.addHandler(logFileHandler);
 		SimpleFormatter formatter = new SimpleFormatter();
 		logFileHandler.setFormatter(formatter);
 
-		//logger.info("Starting plugin, args length = " + args.length);
+		logger.info("Starting plugin, args length = " + args.length);
 
 		logger.info(String.format("Passed parameters:\n%1$s\n%2$s\n%3$s\n%4$s\n%5$s\n%6$s\n%7$s\n%8$s\n",
 				String.format("Run Id: %1$s", testRailRunId), String.format("TestRail URL: %1$s", testRailAddress),
@@ -99,8 +88,6 @@ public class Main {
 					// unreachable
 				}
 			} while (runResult.equals(RUN_RESULT.RUN_REPEAT));
-
-			pluginHandler.checkEnvironmentsAndStepsQuantity(schedule, testRailTests);
 
 			pluginHandler.setTestRailTestResults(testRailRunId, testRailAPIclient, schedule, testRailTests);
 
