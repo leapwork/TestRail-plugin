@@ -1,5 +1,5 @@
 # Leapwork Integration
-Automate you testcase Execution with the help of the Leapwork.
+Automate your testcase Execution with the help of the Leapwork.
 
 # More Details
 Leapwork’s completely visual, no-code automation platform makes it easy for business and IT users to automate repetitive processes, so enterprises can adopt and scale automation faster. 
@@ -9,7 +9,7 @@ For rapid results, at lower cost, and requiring fewer specialist resources than 
  - Create your own Testrun with the reuired testcases in Testrail
  - Execute the testrun automatically from Testrail.
  - The automatic test execution will be done on the Leapwoprk
- - Tje test results of automatic execution will be posted on Testrail.
+ - The test results of your test execution will be posted on Testrail.
  
 # Installing
 - Put files leapwork.php and TestRailsCMD.jar to TestRail root folder - the same folder where you can find index.php

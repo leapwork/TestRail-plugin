@@ -129,6 +129,7 @@ public final class PluginHandler {
 
 		for (JsonElement jsonElement : jsonTests) {
 			JsonObject jsonTest = jsonElement.getAsJsonObject();
+			System.out.println(jsonTest.get("id"));
 			tests.add(new Test(jsonTest.get("id").getAsInt(), jsonTest.get("case_id").getAsInt(),
 					jsonTest.get("title").getAsString(), testRailAPIClient.getTestRailAddress(),
 					Utils.defaultIntegerIfNull(jsonTest.get("assignedto_id"), null)));

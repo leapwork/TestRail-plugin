@@ -16,16 +16,23 @@ public class Main {
 
 	public static void main(String[] args) throws IOException, APIException {
 		
-		final String testRailRunId = args[0];
-		final String testRailAddress = args[1];
-		final String testRailLogin = args[2];
-		final String testRailPassword = args[3];
-		final String leapworkHostURL = args[4];
-		final String scheduleId = args[5];
-		final String delay = args[6];
-		final String doneStatusAs = args[7];
-		final String apiAccesskey = args[8];
+		/*
+		 * final String testRailRunId = args[0]; final String testRailAddress = args[1];
+		 * final String testRailLogin = args[2]; final String testRailPassword =
+		 * args[3]; final String leapworkHostURL = args[4]; final String scheduleId =
+		 * args[5]; final String delay = args[6]; final String doneStatusAs = args[7];
+		 * final String apiAccesskey = args[8];
+		 */
 
+		final String testRailRunId = "19";
+		final String testRailAddress = "http://localhost:85";
+		final String testRailLogin = "admin@leapwork.com";
+		final String testRailPassword = "admin";
+		final String leapworkHostURL = "http://localhost:9001";
+		final String scheduleId = "6a5f047b-b75e-4f07-8eb7-8ab754554bea";
+		final String delay = "10";
+		final String doneStatusAs = "5";
+		final String apiAccesskey = "qwertyui";
 	
 		FileHandler logFileHandler = new FileHandler(String.format(Messages.LOG_FILE_NAME, testRailRunId));
 		logger.addHandler(logFileHandler);
